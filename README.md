@@ -4,9 +4,9 @@ PC内のKWZファイルを、サムネイル付きの一覧から探して音声
 
 ## ダウンロード・インストール
 
-Windows x64版は [Releases](https://github.com/y4m4s/kwz-viewer/releases) で配布します。初回リリースは準備中です。
+Windows x64版は [最新リリース](https://github.com/y4m4s/kwz-viewer/releases/latest) からダウンロードできます。
 
-1. Releasesの「Assets」から `*-setup.exe` をダウンロードします。
+1. 最新リリースの「Assets」から `*-setup.exe` をダウンロードします。
 2. インストーラーを実行し、画面の案内に従ってインストールします。
 3. スタートメニューから「kwz viewer」を起動します。
 

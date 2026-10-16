@@ -1,0 +1,27 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "kwz viewer",
+  "version": "0.1.0",
+  "identifier": "com.kwzviewer.desktop",
+  "build": {
+    "beforeDevCommand": "npm run dev -w apps/web",
+    "devUrl": "http://127.0.0.1:5173",
+    "beforeBuildCommand": "node scripts/desktop-licenses.mjs && npm run build -w apps/web",
+    "frontendDist": "../apps/web/dist"
+  },
+  "app": {
+    "windows": [{ "label": "main", "title": "kwz viewer", "width": 1100, "height": 800, "minWidth": 640, "minHeight": 480, "center": true, "dragDropEnabled": false }],
+    "security": {
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' asset: http://asset.localhost data: blob:; connect-src 'self' ipc: http://ipc.localhost; worker-src 'self' blob:; object-src 'none'; frame-src 'none'",
+      "assetProtocol": { "enable": true, "scope": [] }
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis"],
+    "icon": ["icons/icon.ico"],
+    "resources": {"../apps/web/public/licenses/": "licenses/"},
+    "shortDescription": "ローカルKWZビューア",
+    "windows": { "nsis": { "displayLanguageSelector": false, "languages": ["Japanese"], "installMode": "currentUser" } }
+  }
+}

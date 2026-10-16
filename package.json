@@ -1,0 +1,44 @@
+{
+  "name": "kwz-viewer",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "scripts": {
+    "desktop:dev": "node scripts/desktop.mjs dev",
+    "desktop:build": "node scripts/desktop.mjs build",
+    "desktop:check": "node scripts/desktop.mjs check",
+    "desktop:test": "node scripts/desktop.mjs test",
+    "desktop:lint": "node scripts/desktop.mjs lint",
+    "dev": "concurrently -k \"npm run dev:server\" \"npm run dev -w apps/web\"",
+    "dev:server": "tsx watch apps/server/src/index.ts --dev",
+    "build": "npm run build -w apps/web && npm run build -w apps/server",
+    "start": "node apps/server/dist/apps/server/src/index.js",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "spike": "tsx scripts/spike.ts",
+    "verify:library": "tsx scripts/verify-library.ts"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.0",
+    "@tailwindcss/vite": "^4.3.3",
+    "@tauri-apps/cli": "^2.12.3",
+    "@types/node": "^26.6.5",
+    "@types/pngjs": "^6.0.5",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "concurrently": "^10.0.6",
+    "tailwindcss": "^4.3.3",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.4",
+    "vitest": "^5.0.4"
+  }
+}

@@ -1,0 +1,1 @@
+{"name":"@kwz/server","private":true,"type":"module","scripts":{"dev":"npm --prefix ../.. run dev:server","build":"tsc -p tsconfig.json"},"dependencies":{"@fastify/static":"^10.1.6","chokidar":"^5.0.0","fastify":"^5.12.7","flipnote.js":"^6.3.1","pngjs":"^7.0.0"}}

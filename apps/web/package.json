@@ -1,0 +1,1 @@
+{"name":"@kwz/web","private":true,"type":"module","scripts":{"dev":"vite --host 127.0.0.1","build":"vite build"},"dependencies":{"@tauri-apps/api":"^2.12.4","flipnote.js":"^6.3.1","react":"^19.3.0","react-dom":"^19.3.0"}}

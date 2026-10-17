@@ -20,6 +20,10 @@ export default function App() {
   const [choosingDirectory, setChoosingDirectory] = useState(false);
   const [directoryError, setDirectoryError] = useState('');
   const libraryVersion = useRef(0);
+  const pageDots = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    pageDots.current?.querySelector('.current')?.scrollIntoView({ block: 'nearest', inline: 'center' });
+  }, [list]);
   const chooseDirectory = async () => {
     setChoosingDirectory(true); setDirectoryError('');
     try {
@@ -132,8 +136,8 @@ export default function App() {
     });
     return () => abort.abort();
   }, [selected?.id, status?.lastScannedAt, status?.scanStatus]);
-  const pages = Math.max(1, Math.ceil((list?.total ?? 0) / 6));
-  const dotStart = Math.max(0, Math.min(page - 3, pages - 5));
+  const pages = Math.max(1, Math.ceil((list?.total ?? 0) / (list?.pageSize ?? 6)));
+  const displayedPage = Math.min(list?.page ?? 1, pages);
   const folderLabel = (path: string) => path === '' ? 'すべて' : path === '000' ? 'ホーム' : path;
   const appHeader = <header className="app-header"><button className="brand" onClick={() => setScreen('home')} aria-label="kwz viewer ホーム">kwz viewer</button><span className={`header-note ${orderFading ? 'is-fading' : ''}`} role="status">{screen === 'home' ? '' : orderMessage}</span></header>;
   return <main className={`paper-app ${screen === 'view' ? 'is-view' : ''}`}>
@@ -153,7 +157,7 @@ export default function App() {
         <PageArrow direction="left" disabled={page <= 1 || loading || savingOrder} onClick={() => setPage(page - 1)} label="前の作品ページ" onDragOver={hoverPage(-1)} onDragLeave={leavePage} dragActive={!!draggedId} />
         <PageArrow direction="right" disabled={page >= pages || loading || savingOrder} onClick={() => setPage(page + 1)} label="次の作品ページ" onDragOver={hoverPage(1)} onDragLeave={leavePage} dragActive={!!draggedId} />
       </div>
-      <div className="gallery-page-status" data-page={page} aria-busy={loading}><div className="page-dots" aria-hidden="true">{Array.from({ length: Math.min(5, pages) }, (_, i) => <i key={i} className={i + dotStart === page - 1 ? 'current' : ''} />)}</div></div>
+      <div className="gallery-page-status" data-page={displayedPage} aria-label={`${displayedPage} / ${pages} ページ`} aria-busy={loading}><div ref={pageDots} className="page-dots" aria-hidden="true">{Array.from({ length: pages }, (_, i) => <i key={i} className={i === displayedPage - 1 ? 'current' : ''} />)}</div></div>
       <div className="view-bottom"><button onClick={() => setScreen('home')} aria-label="トップに戻る">↶</button><button className="folder-select" aria-label="フォルダ選択" title={status?.directory ? `選択中：${status.directory}` : 'フォルダ選択'} disabled={choosingDirectory} onClick={() => { void chooseDirectory(); }}><span>{choosingDirectory ? 'フォルダを選択中…' : status?.directory ? `選択中：${status.directory}` : 'フォルダ選択'}</span></button></div>
       {directoryError && <p className="error" role="alert">{directoryError}</p>}
     </section>}

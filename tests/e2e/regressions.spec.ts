@@ -4,6 +4,60 @@ import type { KwzNote, LibraryStatus } from '../../packages/shared/src/types';
 const ready: LibraryStatus = { directoryConfigured: true, directory: 'C:/old', scanStatus: 'ready', total: 1, indexed: 1, failed: 0, lastScannedAt: '2026-10-16T00:00:00Z' };
 const note: KwzNote = { id: 'a'.repeat(64), fileName: 'test.kwz', relativePath: 'test.kwz', status: 'ready', author: 'Test', createdAt: null, editedAt: null, fileModifiedAt: '2026-10-16T00:00:00Z', frameCount: 1, durationSeconds: 1, loop: false, byteSize: 1, thumbnailUrl: null };
 
+test('gallery dots match every page and update together with the displayed notes', async ({ page }) => {
+  let total = 43;
+  let release!: () => void;
+  const gate = new Promise<void>(resolve => { release = resolve; });
+  await page.route('**/api/health', route => route.fulfill({ json: { ...ready, total, indexed: total } }));
+  await page.route('**/api/folders', route => route.fulfill({ json: [{ path: '000', count: 43 }, { path: 'small', count: 2 }] }));
+  await page.route('**/api/notes?**', async route => {
+    const params = new URL(route.request().url()).searchParams;
+    const current = Number(params.get('page'));
+    const count = params.get('folder') === 'small' ? 2 : total;
+    if (current === 2) await gate;
+    const items = Array.from({ length: Math.max(0, Math.min(6, count - (current - 1) * 6)) }, (_, i) => ({
+      ...note, id: `${current}-${i}`, fileName: `page-${current}-${i}.kwz`,
+    }));
+    return route.fulfill({ json: { items, total: count, page: current, pageSize: 6 } });
+  });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'みる', exact: true }).click();
+  const status = page.locator('.gallery-page-status');
+  const dots = status.locator('.page-dots i');
+  await expect(dots).toHaveCount(8);
+  await expect(dots.nth(0)).toHaveClass('current');
+  await page.getByRole('button', { name: '次の作品ページ' }).click();
+  await expect(status).toHaveAttribute('aria-busy', 'true');
+  await expect(dots.nth(0)).toHaveClass('current');
+  await expect(page.getByRole('button', { name: 'page-1-0.kwzを開く' })).toBeVisible();
+  release();
+  for (let current = 2; current <= 8; current++) {
+    await expect(status).toHaveAttribute('aria-busy', 'false');
+    await expect(status).toHaveAttribute('data-page', String(current));
+    await expect(dots.nth(current - 1)).toHaveClass('current');
+    await expect(page.getByRole('button', { name: `page-${current}-0.kwzを開く` })).toBeVisible();
+    if (current < 8) await page.getByRole('button', { name: '次の作品ページ' }).click();
+  }
+  await expect(page.locator('.note-card')).toHaveCount(1);
+  await expect(page.getByRole('button', { name: '次の作品ページ', includeHidden: true })).toBeDisabled();
+  await page.getByRole('button', { name: '前の作品ページ' }).click();
+  await expect(status).toHaveAttribute('data-page', '7');
+  await expect(dots.nth(6)).toHaveClass('current');
+  // A long page indicator must remain within the mobile viewport.
+  total = 601;
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.getByRole('button', { name: '前の作品ページ' }).click();
+  await expect(dots).toHaveCount(101);
+  await expect(dots.nth(5)).toHaveClass('current');
+  await expect(dots.nth(5)).toBeInViewport({ ratio: 1 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.getByRole('button', { name: 'smallフォルダー', exact: true }).click();
+  await expect(dots).toHaveCount(1);
+  await expect(dots.nth(0)).toHaveClass('current');
+  await expect(status).toHaveAttribute('aria-label', '1 / 1 ページ');
+  await expect(page.locator('.note-card')).toHaveCount(2);
+});
+
 test('root-level notes remain reachable alongside subfolders', async ({ page }) => {
   const nested = { ...note, id: 'b'.repeat(64), relativePath: '000/nested.kwz', fileName: 'nested.kwz' };
   await page.route('**/api/health', route => route.fulfill({ json: { ...ready, total: 2, indexed: 2 } }));

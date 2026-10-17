@@ -144,7 +144,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .gallery { width: 100%; height: 100%; margin-inline: auto; gap: 16px; grid-template-rows: repeat(2, minmax(0, 1fr)); }
 .thumbnail { aspect-ratio: 4/3; background: #fff; }
 .gallery-page-status { padding: 0 48px 6px; justify-content: center; }
-.gallery-page-status .page-dots { margin: 6px 0; }
+.gallery-page-status .page-dots { margin: 6px 0; max-width: 100%; overflow-x: auto; justify-content: safe center; }
+.gallery-page-status .page-dots i { flex-shrink: 0; }
 .view-bottom { display: grid; grid-template-columns: 16% 1fr; align-items: stretch; padding: 0; gap: 0; border-top: 0; background: #f7a623; }
 .view-bottom button { position: relative; min-height: 48px; align-self: stretch; background-color: #f7a623; font-size: 34px; padding: 6px; border-right: 1px solid #d98e1f; box-shadow: inset 0 2px 0 #ffc45f, inset 0 -3px 0 #e99418; transition: background-color .15s ease, box-shadow .15s ease, transform .15s ease; }
 .view-bottom button:not(:disabled):hover, .view-bottom button:focus-visible { background-color: #ffb83e; transform: translateY(-2px); box-shadow: inset 0 2px 0 #ffd17a, inset 0 -3px 0 #eba02c, 0 4px 8px #b46b2433; }

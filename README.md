@@ -28,7 +28,7 @@ Node.jsやRustのインストールは不要です。WebView2が未導入の場�
 
 ### Windowsデスクトップ版
 
-Node.js 24.x、Rust stable（MSVC）、Visual StudioのC++ビルドツール、Windows SDKが必要です。
+Node.js 24.22.1（24系）、Rust stable（MSVC）、Visual StudioのC++ビルドツール、Windows SDKが必要です。
 
 ```powershell
 npm ci
@@ -42,7 +42,7 @@ npm run desktop:build
 
 ### ブラウザ版
 
-Node.js 24.xが必要です。
+Node.js 24.22.1（24系）が必要です。開発用のバージョンは `.node-version` に記載しています。
 
 ```powershell
 npm ci
